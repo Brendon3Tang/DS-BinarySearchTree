@@ -38,7 +38,16 @@ void BinarySearchTree::insert(BSNode*& newNode, int key)
 
 void BinarySearchTree::release(BSNode* bt)
 {
-
+	if (bt == NULL)
+		return;
+	else
+	{
+		release(bt->leftChild);
+		release(bt->rightChild);
+		cout << "ÒÑÉ¾³ý½Úµã£º" << bt->data << endl;
+		delete bt;
+		bt = NULL;
+	}
 }
 
 void BinarySearchTree::inOrder(BSNode* bt)
