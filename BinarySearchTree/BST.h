@@ -31,9 +31,9 @@ private:
 
 	void inOrder(BSNode* bt);
 
-	bool deleteBST(BSNode* bt, int key);
+	bool deleteBST(BSNode* &bt, int key);
 
-	bool deleteNode(BSNode*& bt);
+	void  deleteNode(BSNode*& bt);
 
 	BSNode* searchBST(BSNode* bt, int key);
 };

@@ -62,14 +62,72 @@ void BinarySearchTree::inOrder(BSNode* bt)
 	}
 }
 
-bool BinarySearchTree::deleteBST(BSNode* bt, int key)
+bool BinarySearchTree::deleteBST(BSNode*& bt, int key)
 {
-	return false;
+	if (bt == NULL)
+		return false;
+
+	if (bt->data == key)
+		deleteNode(bt);
+	else if (key < bt->data)
+		return deleteBST(bt->leftChild, key);
+	else if (key > bt->data)
+		return deleteBST(bt->rightChild, key);
+	return true;
 }
 
-bool BinarySearchTree::deleteNode(BSNode*& bt)
+void BinarySearchTree::deleteNode(BSNode*& bt)
 {
-	return false;
+	BSNode* p = NULL;
+	//case1:如果bt是叶子节点
+	if (bt->leftChild == NULL && bt->rightChild == NULL)
+	{
+		p = bt;
+		bt = NULL;
+		delete p;
+	}
+	//case2a:如果bt没有右子树,只有左子树
+	else if (bt->rightChild == NULL)
+	{
+		p = bt;
+		bt = bt->leftChild;
+		delete p;
+	}
+	//case2b:如果bt没有左子树，只有右子树
+	else if (bt->leftChild == NULL)
+	{
+		p = bt;
+		bt = bt->rightChild;
+		delete p;
+	}
+	/*case3:bt既有左子树又有右子树：找目标节点左子树中最大的值X_l或者右子树中最小的值X_r来代替要删除的目标节点。
+	如果选的是X_l，那么要先将X_l替换bt,再将X_l的左子树（因为X_l为左子树的最大值，X_l不可能有右子树）连接到X_l的parent的左/右child；
+	如果选的是X_r,那么只需要用X_r替换bt即可（找X_r:向右下走一次，然后一直往左下走到底，就找到了X_r）*/
+	//此处用X_l为例子
+	else
+	{
+		BSNode* parent, * pre;
+		parent = bt;//parent是pre的parent
+		pre = bt->leftChild;//往左下，准备在左子树中寻找最大值
+
+		//找X_l：向左下走一次抵达第一个节点，如果还有右子树，然后一直往右下走，就找到了X_l；如果没有右子树，则该第一个节点就是X_l。
+		//假如往左下走一次之后还有有右子树,while就会运行：
+		while (pre->rightChild != NULL)
+		{
+			parent = pre;
+			pre = pre->rightChild; //找到X_l并赋值给pre
+		}
+		bt->data = pre->data; //找到X_l之后，将bt的值替换为X_l的值
+		if (parent != bt)//假如while运行过（即左下走一次之后还有右子树），那么parent的值就会变化，不再等于bt。此时把X_l的左子树连接到X_l的parent的右child
+		{
+			parent->rightChild = pre->leftChild;
+		}
+		else if (parent == bt)//假如while没运行过（即左下走一次之后没有右子树），那么parent的值就不会变化，等于bt。此时把X_l的左子树连接到parent/bt的左child
+		{
+			parent->leftChild = pre->leftChild;
+		}
+		delete pre; //替换完成后X_l的值到了bt上，清除原X_l节点
+	}
 }
 
 BSNode* BinarySearchTree::searchBST(BSNode* bt, int key)
@@ -104,4 +162,14 @@ int main()
 		cout << "未找到节点！" << endl;
 	else if (result->data == 55)
 		cout << "已找到节点！" << endl;
+
+	//删除BS树
+	int deleteNode;
+	cout << "请输入要删除的节点：";
+	cin >> deleteNode;
+	cout << endl;
+	BST.deleteBST(deleteNode);
+	cout << "删除后的inOrder：" << endl;
+	BST.inOrder();
+	cout << endl;
 }
