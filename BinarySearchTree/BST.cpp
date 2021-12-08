@@ -101,8 +101,10 @@ void BinarySearchTree::deleteNode(BSNode*& bt)
 		delete p;
 	}
 	/*case3:bt既有左子树又有右子树：找目标节点左子树中最大的值X_l或者右子树中最小的值X_r来代替要删除的目标节点。
-	如果选的是X_l，那么要先将X_l替换bt,再将X_l的左子树（因为X_l为左子树的最大值，X_l不可能有右子树）连接到X_l的parent的左/右child；
-	如果选的是X_r,那么只需要用X_r替换bt即可（找X_r:向右下走一次，然后一直往左下走到底，就找到了X_r）*/
+	1.如果选的是X_l，那么要先将X_l替换bt,再将X_l的左子树（因为X_l为左子树的最大值，X_l不可能有右子树）连接到X_l的parent的左/右child；
+	2.如果选的是X_r,那么只需要用X_r替换bt,再将X_r的左子树（一定为空指针，因为X_r为最小，不会有子树。此处连接是为了防止野指针），
+	连接到X_r的parent的左/右child（找X_r:向右下走一次，然后一直往左下走到底，就找到了X_r）*/
+	
 	//此处用X_l为例子
 	else
 	{
@@ -128,6 +130,27 @@ void BinarySearchTree::deleteNode(BSNode*& bt)
 		}
 		delete pre; //替换完成后X_l的值到了bt上，清除原X_l节点
 	}
+	//此处以X_r为例子
+	/*else
+	{
+		BSNode* pre, *parent;
+		parent = bt;
+		pre = bt->rightChild;
+		while (pre->leftChild != NULL)
+		{
+			parent = pre;
+			pre = pre->leftChild;
+		}
+		bt->data = pre->data;
+
+		//虽然pre->leftChild一定是NULL，但为了防止野指针，一定要连接
+		if(parent == bt)
+			parent->rightChild = pre->leftChild;//或parent->rightChild = NULL;
+		if (parent != bt)
+			parent->leftChild = pre->leftChild;//或parent->leftChild = NULL;
+		delete pre;
+		pre = NULL;
+	}*/
 }
 
 BSNode* BinarySearchTree::searchBST(BSNode* bt, int key)
